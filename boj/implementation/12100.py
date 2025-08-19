@@ -1,157 +1,149 @@
-'''
-같은 값을 갖는 블록은 하나로 합쳐진다 
+def get_board_up(now_board):
+    next_board = [[0] * n for __ in range(n)]
 
-보드를 최대 5번 이동 
-각 방향에서 합쳐지는 경우가 있으면 이동 아니면 이동 안함 
-이동안하면 최대 값 반환 
-
-방향 
-상 - 위 아래로 같은 값을 갖는지 
-하 - 위 아래로 같은 값을 갖는지 
-좌 - 좌우로 같은 값을 갖는지 
-우
-
-위 / 오른쪽 이거 두개의 경우를 생각하면 되는가?
-'''
-
-def get_max_of_board(b):
-    max_number = 0 
-    for i in range(N):
-        for j in range(N):
-            max_number = max(b[i][j], max_number)
-    return max_number
-
-def get_new_board_up(b): 
-    board = [[0] * N for __ in range(N)]
-    for col in range(N):
-        new_col = [] 
-        num = 0 
-        for row in range(N):
-            if b[row][col] == 0:
+    for col in range(n):
+        state = 0
+        new_col = []
+        for row in range(n):
+            if now_board[row][col] == 0:
                 continue 
-            if num == 0:
-                num = b[row][col]
-            elif b[row][col] != num:
-                new_col.append(num)
-                num = b[row][col]
-            elif b[row][col] == num:
-                new_col.append(num * 2)
-                num = 0 
-        if num > 0:
-            new_col.append(num)
-        for row in range(N):
-            if row < len(new_col):
-                board[row][col] = new_col[row]
+            if state == 0:
+                state = now_board[row][col]
+            elif state > 0 and now_board[row][col] != state:
+                new_col.append(state)
+                state = now_board[row][col]
+            elif state > 0 and now_board[row][col] == state:
+                new_col.append(state * 2)
+                state = 0
+        
+        if state > 0:
+            new_col.append(state)
+
+        for r in range(n):
+            if r < len(new_col):
+                next_board[r][col] = new_col[r]
             else:
-                board[row][col] = 0
-    return board
+                next_board[r][col] = 0
 
-def get_new_board_down(b): 
-    board = [[0] * N for __ in range(N)]
-    for col in range(N):
-        new_col = [] 
-        num = 0 
-        for row in range(N - 1, -1, -1):
-            if b[row][col] == 0:
-                continue 
-            if num == 0:
-                num = b[row][col]
-            elif b[row][col] != num:
-                new_col.append(num)
-                num = b[row][col]
-            elif b[row][col] == num:
-                new_col.append(num * 2)
-                num = 0 
-        if num > 0:
-            new_col.append(num)
+    return next_board
+
+def get_board_down(now_board):
+    next_board = [[0] * n for __ in range(n)]
+    for col in range(n):
+        state = 0
+        new_col = []
+        for row in range(n - 1, -1, -1):
+            if now_board[row][col] > 0:
+                if state == 0:
+                    state = now_board[row][col]
+                elif state > 0 and now_board[row][col] != state:
+                    new_col.append(state)
+                    state = now_board[row][col]
+                elif state > 0 and now_board[row][col] == state:
+                    new_col.append(state * 2)
+                    state = 0
         
-        for row in range(N -1 , -1, -1):
-            if (N - 1) - row < len(new_col):
-                board[row][col] = new_col[(N - 1) - row]
+        if state > 0:
+            new_col.append(state)
+
+        for r in range(n - 1, -1, -1):
+            if (n - 1) - r < len(new_col):
+                next_board[r][col] = new_col[(n - 1) - r]
             else:
-                board[row][col] = 0
-    return board
+                next_board[r][col] = 0
 
-def get_new_board_right(b):
-    board = [] 
-    for row in range(N):
-        new_row = [] 
-        num = 0 
-        for col in range(N-1, -1, -1):
-            if b[row][col] == 0:
-                continue 
-            if num == 0:
-                num = b[row][col]
-            elif b[row][col] != num:
-                new_row.append(num)
-                num = b[row][col]
-            elif b[row][col] == num:
-                new_row.append(num * 2)
-                num = 0 
-        if num > 0:
-            new_row.append(num)
+    return next_board
+
+def get_board_right(now_board):
+    next_board = [[0] * n for __ in range(n)]
+    for row in range(n):
+        state = 0
+        new_row = []
+        for col in range(n - 1, -1, -1):
+            if now_board[row][col] > 0:
+                if state == 0:
+                    state = now_board[row][col]
+                elif state > 0 and now_board[row][col] != state:
+                    new_row.append(state)
+                    state = now_board[row][col]
+                elif state > 0 and now_board[row][col] == state:
+                    new_row.append(state * 2)
+                    state = 0
         
-        board.append([])
-        
-        for col in range(N - 1, -1 , -1):
-            if col < len(new_row):
-                board[-1].append(new_row[col])
+        if state > 0:
+            new_row.append(state)
+
+        for c in range(n - 1, -1, -1):
+            if (n - 1) - c < len(new_row):
+                next_board[row][c] = new_row[(n - 1) - c]
             else:
-                board[-1].append(0)
+                next_board[row][c] = 0
 
-    return board
+    return next_board
 
-def get_new_board_left(b):
-    board = [] 
-    for row in range(N):
-        new_row = [] 
-        num = 0 
-        for col in range(N):
-            if b[row][col] == 0:
-                continue 
-            if num == 0:
-                num = b[row][col]
-            elif b[row][col] != num:
-                new_row.append(num)
-                num = b[row][col]
-            elif b[row][col] == num:
-                new_row.append(num * 2)
-                num = 0 
-        if num > 0:
-            new_row.append(num)
+def get_board_left(now_board):
+    next_board = [[0] * n for __ in range(n)]
+    for row in range(n):
+        state = 0
+        new_row = []
+        for col in range(n):
+            if now_board[row][col] > 0:
+                if state == 0:
+                    state = now_board[row][col]
+                elif state > 0 and now_board[row][col] != state:
+                    new_row.append(state)
+                    state = now_board[row][col]
+                elif state > 0 and now_board[row][col] == state:
+                    new_row.append(state * 2)
+                    state = 0
         
-        board.append([])
-        
-        for col in range(N):
-            if col < len(new_row):
-                board[-1].append(new_row[col])
+        if state > 0:
+            new_row.append(state)
+
+        for c in range(n):
+            if c < len(new_row):
+                next_board[row][c] = new_row[c]
             else:
-                board[-1].append(0)
+                next_board[row][c] = 0
 
-    return board
+    return next_board
 
-def solution(depth, board):
+def max_board_number(now_board):
+    answer = 0
+    for i in range(n):
+        for j in range(n):
+            answer = max(now_board[i][j], answer)
+    return answer
+
+def solution(depth, now_board):
     if depth == 5:
-        return get_max_of_board(board) 
+        return max_board_number(now_board)
     
-    max_answer = get_max_of_board(board)
-    for dir in range(4):
-        if dir == 0:
-            new_board = get_new_board_up(board)
-        elif dir == 1:
-            new_board = get_new_board_down(board)
-        elif dir == 2:
-            new_board = get_new_board_right(board)
-        elif dir == 3:
-            new_board = get_new_board_left(board)
-        answer = solution(depth + 1, new_board)
-        max_answer = max(answer, max_answer)
+    max_answer = 0
+
+    up_board = get_board_up(now_board)
+    answer = solution(depth + 1, up_board)
+    max_answer = max(answer, max_answer)
+
+    down_board = get_board_down(now_board)
+    answer = solution(depth + 1, down_board)
+    max_answer = max(answer, max_answer)
+
+    right_board = get_board_right(now_board)
+    answer = solution(depth + 1, right_board)
+    max_answer = max(answer, max_answer)
+
+    left_board = get_board_left(now_board)
+    answer = solution(depth + 1, left_board)
+    max_answer = max(answer, max_answer)
+
     return max_answer
 
 if __name__ == '__main__':
-    N = int(input())
-    given_board = [] 
-    for __ in range(N):
-        given_board.append(list(map(int, input().split())))
-    answer = solution(0, given_board)
+    n = int(input())
+    board = []
+    for __ in range(n):
+        board.append(list(map(int, input().split())))
+    
+    answer = solution(0, board)
     print(answer)
